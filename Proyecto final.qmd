@@ -153,3 +153,4 @@ La tarea asignada es hacer un algoritmo de regresión lineal que prediga el prec
 ## Informe
 
 En esta etapa se debe de simular la presentación de resultados en un entorno real de empresa. ● Suposiciones iniciales ○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué? ● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué? KeepCoding© All rights reserved
+
