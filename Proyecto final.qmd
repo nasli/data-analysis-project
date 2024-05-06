@@ -1,0 +1,62 @@
+---
+title: "Proyecto Final"
+author: "Tatiana Dávila Egas"
+format: html
+editor: visual
+output: html_document
+---
+
+### Data Set
+```{r}
+
+```
+
+### Arquitectura y validación de los datos
+a. Muestreo y exploración inicial de los datos
+b. Definir e implementar el Datawarehouse
+c. (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado
+correctamente
+```{r}
+
+```
+
+### Análisis Exploratorio
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar
+cuales son las métricas adecuadas para el dataset. No olvidemos:
+a. Revisión de la calidad de los datos
+b. Detección outliers (rango de variables), imputación valores nulos.
+c. Boxplots, histogramas, etc.
+d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
+```{r}
+
+```
+
+### Visualización de las métricas
+A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y contesta
+a través de un dashboard a una pregunta relevante que hagas sobre los datos.
+a. a. Se valorará el diseño final del dashboard.
+b. b. El uso de buenas prácticas.
+c. c. El cálculo de KPIs adecuados y el uso de campos calculados avanzados.
+d. d. El uso de vistas interactivas.
+Nota: En este ejercicio no habrá un dashboard modelo sino que se basará en valorar
+vuestras capacidades con el uso de la herramienta de Tableau y que podáis demostrar
+todo lo aprendido durante este bloque
+```{r}
+
+```
+
+### Pre-procesamiento y Modelado
+La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un
+inmueble en función de las características que elijáis
+```{r}
+
+```
+
+
+### Informe
+En esta etapa se debe de simular la presentación de resultados en un entorno real de
+empresa.
+● Suposiciones iniciales
+○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué?
+● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué?
+KeepCoding© All rights reserved
