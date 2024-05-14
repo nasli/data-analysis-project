@@ -9,6 +9,7 @@ output: pdf_document
 ---
 
 ## Data Set
+
 ```{r, echo=FALSE, include=FALSE}
 library(tidyverse)
 library(magrittr)
@@ -17,13 +18,15 @@ data = read_csv2('air-bnb-listings.csv')
 
 ## Arquitectura y validación de los datos
 
-a. Muestreo y exploración inicial de los datos
+a.  Muestreo y exploración inicial de los datos
+
 ```{r, include=TRUE, echo=FALSE}
 paste("El dataset tiene:", dim(data)[1], "filas y " , dim(data)[2], "columnas.")
 paste("Las variables que tenemos son: ")
 paste(colnames(data))
 ```
-Para mayor facilidad en el manejo de los datos reemplazamos los espacios en los nombres de las columnas por guiones bajos "_" y se cambian los nombres por minúsculas.
+
+Para mayor facilidad en el manejo de los datos reemplazamos los espacios en los nombres de las columnas por guiones bajos "\_" y se cambian los nombres por minúsculas.
 
 ```{r}
 colnames(data) = colnames(data) %>%  str_replace_all(' ', '_') %>% tolower()
@@ -31,23 +34,24 @@ colnames(data) = colnames(data) %>%  str_replace_all(' ', '_') %>% tolower()
 
 Hacemos un análisis inicial de los datos, en este encontramos:
 
-- La variable room_price tiene como valor máximo 9999, este valor se puede considerar como outlier pero usualmente se usa para codificar valores no válidos, por lo que se tendrá en cuenta para eliminar y no ser considerado como valor máximo observado.
+-   La variable room_price tiene como valor máximo 9999, este valor se puede considerar como outlier pero usualmente se usa para codificar valores no válidos, por lo que se tendrá en cuenta para eliminar y no ser considerado como valor máximo observado.
 
-- La variable number_of_reviews_per_month es numérica pero se ha cargado como character, tenemos que transformarla a numérica.
+-   La variable number_of_reviews_per_month es numérica pero se ha cargado como character, tenemos que transformarla a numérica.
 
-- Aunque las columnas room_id y host_id se cargan como variables cuantitativas, por sus características debemos transformarlas en variables de tipo texto.
+-   Aunque las columnas room_id y host_id se cargan como variables cuantitativas, por sus características debemos transformarlas en variables de tipo texto.
 
-- La variable minimum_nights tiene un valor máximo de 1125, tendremos que analizarlo para saber si se considera un outlier o si se puede corresponder con un valor anómalo.
+-   La variable minimum_nights tiene un valor máximo de 1125, tendremos que analizarlo para saber si se considera un outlier o si se puede corresponder con un valor anómalo.
 
-- La variable coordinates es una variable que contiene la latitud y longitud en una misma cadena de texto, vamos a separar separar la variable usando la "," como separador y lo vamos a transformar a variable numérica.
+-   La variable coordinates es una variable que contiene la latitud y longitud en una misma cadena de texto, vamos a separar separar la variable usando la "," como separador y lo vamos a transformar a variable numérica.
 
-- Las variables date_last_review y number_of_reviews_per_month tienen NA's, en el caso de number_of_reviews_per_month al ser cuantitativa se puede considerar imputar con un 0, ya que la interpretación de la variable no se vería afectada.
+-   Las variables date_last_review y number_of_reviews_per_month tienen NA's, en el caso de number_of_reviews_per_month al ser cuantitativa se puede considerar imputar con un 0, ya que la interpretación de la variable no se vería afectada.
 
 ```{r}
 summary(data)
 ```
 
 Aplicamos los cambios que hemos observado en el análisis inicial antes de realizar el análisis de las variables cuantitativas.
+
 ```{r}
 data[,c("room_id", "host_id")] %<>%  toString()
 data$number_of_reviews_per_month %<>%  as.numeric()
@@ -55,50 +59,97 @@ data$lat <- data$coordinates %>% str_split_i(', ', 1) %>% as.numeric()
 data$long <- data$coordinates %>% str_split_i(', ', 2) %>%  as.numeric()
 ```
 
+Analizamos cuántos valores distintos tienen las variables cualitativas:
 
-b. Definir e implementar el Datawarehouse
 ```{r}
+data %>% select_if(where(is.character)) %>% map_dfc(n_distinct)
 ```
-c. (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado
-correctamente
+
+Las variables City y Country deberían tener un único valor, ya que solo nos centramos en una ciudad y en un país.
+
+```{r}
+print('Ciudades únicas:')
+data$city %>% unique()
+
+print('Países únicas:')
+data$country %>% unique()
+```
+
+```{r}
+data = data[data$city=="Madrid",]
+
+```
+
+```{r}
+data %>% select_if(where(is.character)) %>% map_dfc(n_distinct)
+```
+
+b.  Definir e implementar el Datawarehouse
+
+```{r}
+data[is.na(data$number_of_reviews_per_month), 'number_of_reviews_per_month'] = 0
+```
+
+c.  (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado correctamente
 
 ## Análisis Exploratorio
-Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar
-cuales son las métricas adecuadas para el dataset. No olvidemos:
-a. Revisión de la calidad de los datos
-b. Detección outliers (rango de variables), imputación valores nulos.
-c. Boxplots, histogramas, etc.
-d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
-```{r}
 
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
+
+```{r}
+data %>% select_if(where(is.numeric)) %>% summary()
+```
+
+En las variables room_price y minimum_nights tiene un máximo muy lejano al tercer cuartil, vamos a analizar si estos valores se pueden considerar válidos o no.
+
+```{r}
+data %>% select ('room_type','room_price', 'minimum_nights') %>%
+  ggplot( aes(x=room_type, y=minimum_nights, fill=room_type)) +
+    geom_boxplot() +
+ #   scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+  #  theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("") +
+    xlab("")
+```
+
+```{r}
+data %>% select ('room_type','room_price', 'minimum_nights') %>%
+  ggplot( aes(x=room_type, y=room_price, fill=room_type)) +
+    geom_boxplot() +
+ #   scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+  #  theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("") +
+    xlab("")
+```
+
+```{r}
+data$room_type %>% table() %>% barplot()
 ```
 
 ## Visualización de las métricas
-A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y contesta
-a través de un dashboard a una pregunta relevante que hagas sobre los datos.
-a. a. Se valorará el diseño final del dashboard.
-b. b. El uso de buenas prácticas.
-c. c. El cálculo de KPIs adecuados y el uso de campos calculados avanzados.
-d. d. El uso de vistas interactivas.
-Nota: En este ejercicio no habrá un dashboard modelo sino que se basará en valorar
-vuestras capacidades con el uso de la herramienta de Tableau y que podáis demostrar
-todo lo aprendido durante este bloque
+
+A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y contesta a través de un dashboard a una pregunta relevante que hagas sobre los datos. a. a. Se valorará el diseño final del dashboard. b. b. El uso de buenas prácticas. c. c. El cálculo de KPIs adecuados y el uso de campos calculados avanzados. d. d. El uso de vistas interactivas. Nota: En este ejercicio no habrá un dashboard modelo sino que se basará en valorar vuestras capacidades con el uso de la herramienta de Tableau y que podáis demostrar todo lo aprendido durante este bloque
 
 ```{r}
 
 ```
 
 ## Pre-procesamiento y Modelado
-La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un
-inmueble en función de las características que elijáis
+
+La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un inmueble en función de las características que elijáis
+
 ```{r}
 
 ```
 
 ## Informe
-En esta etapa se debe de simular la presentación de resultados en un entorno real de
-empresa.
-● Suposiciones iniciales
-○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué?
-● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué?
-KeepCoding© All rights reserved
+
+En esta etapa se debe de simular la presentación de resultados en un entorno real de empresa. ● Suposiciones iniciales ○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué? ● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué? KeepCoding© All rights reserved
