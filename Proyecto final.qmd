@@ -71,7 +71,7 @@ Las variables City y Country deberían tener un único valor, ya que solo nos ce
 print('Ciudades únicas:')
 data$city %>% unique()
 
-print('Países únicas:')
+print('Países únicos:')
 data$country %>% unique()
 ```
 
@@ -94,7 +94,7 @@ c.  (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado correct
 
 ## Análisis Exploratorio
 
-Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, "dobles espacios", etc.)
 
 ```{r}
 data %>% select_if(where(is.numeric)) %>% summary()
