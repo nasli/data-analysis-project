@@ -94,7 +94,7 @@ c.  (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado correct
 
 ## Análisis Exploratorio
 
-Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, "dobles espacios", etc.)
 
 ```{r}
 data %>% select_if(where(is.numeric)) %>% summary()
@@ -146,7 +146,103 @@ A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y 
 
 La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un inmueble en función de las características que elijáis
 
+En primer lugar dividimos los datos en train y test para para poder **evaluar el rendimiento del modelo**, ya que si usamos todos los datos del dataset, el modelo estaría entrenado para valores específicos de esos datos y que no se podrían generalizar a otros conjuntos de datos, suceso llamado **overfitting**.
+
+Al dividir el dataset, vemos el rendimiento en datos del propio conjunto que no han sido usados para su entrenamiento, por lo que nos da una visión más realista de cómo se comportará el modelo con datos nuevos.
+
 ```{r}
+data <- data[data$room_price<9999,]
+set.seed(123) 
+idx <- sample(1:nrow(data), 0.7*nrow(data))
+train_data <- data[idx,]
+test_data <- data[-idx,]
+```
+
+El modelo de regresión lineal muestra cómo los precios de las habitaciones varían según el barrio, el tipo de habitación, la disponibilidad y el minimo de noches. Hay una gran parte de la variabilidad que no se explica por estas variables, lo que sugiere que se podría considerar agregar más variables independientes para mejorar la capacidad explicativa del modelo o utilizar otro tipo de algoritmo que tenga en cuenta relaciones mas complejas y no lineales entre las variables independientes y la variable dependiente.
+
+En este caso, el término del intercept se ha eliminado, y el precio predicho se calcula directamente sumando los efectos de todas las variables predictoras. Esta aproximación asume que el precio base de una habitación es 0 cuando todas las demás variables son 0.
+
+```{r}
+model <- lm(room_price ~ neighbourhood + room_type + availibility + minimum_nights + 0, data = train_data)
+
+summary(model)
+```
+
+```{r}
+predictions <- predict(model, newdata = test_data)
+accuracy <- sqrt(mean((predictions - test_data$room_price)^2))
+print(paste("RMSE del modelo:", accuracy))
+```
+
+```{r}
+coefficients <- coef(model)
+
+predict_room_price <- function(neighbourhood, room_type, availibility, minimum_nights, coefficients) {
+  # Intercepto
+  intercept <- coefficients["(Intercept)"]
+  
+  # Extraer los coeficientes de las variables categóricas
+  neighbourhood_coef <- coefficients[paste0("neighbourhood", neighbourhood)]
+  room_type_coef <- coefficients[paste0("room_type", room_type)]
+  
+  # Coeficiente de la variable continua
+  availibility_coef <- coefficients["availibility"]
+  minimum_nights_coef <- coefficients["minimum_nights"]
+  
+  # Verificar si los coeficientes de las interacciones existen
+  interaction_coef <- coefficients[paste0("neighbourhood", neighbourhood, ":room_type", room_type)]
+  if (is.na(interaction_coef)) {
+    interaction_coef <- 0
+  }
+  
+  # Calcular la predicción
+  predicted_price <- intercept + neighbourhood_coef + room_type_coef + availibility_coef * availibility + + minimum_nights_coef * minimum_nights + interaction_coef
+  
+  return(predicted_price)
+}
+```
+
+```{r}
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 120,  minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 120 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 365,  minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Se puede comprobar con respecto al anterior que con un precio más alto hay una mayor disponibilidad, el apartamento con el precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Hotel room", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para una habitación de hotel en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es una habitación de hotel, el precio de la misma aumenta notablemente.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. En un barrio más alejado del centro el precio es menor.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 20)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo 20 noches es ",round(predicted_price,2), "€. Al aumentar el minimo numero de noches obligatorias que se debe reservar el precio debe bajar para que sea más interesante.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Private room", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para una habitación privada en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es compartido aunque la habitación sea privada, el precio de la misma disminuye notablemente.")
 
 ```
 
