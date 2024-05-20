@@ -158,8 +158,12 @@ train_data <- data[idx,]
 test_data <- data[-idx,]
 ```
 
+El modelo de regresión lineal muestra cómo los precios de las habitaciones varían según el barrio, el tipo de habitación, la disponibilidad y el minimo de noches. Hay una gran parte de la variabilidad que no se explica por estas variables, lo que sugiere que se podría considerar agregar más variables independientes para mejorar la capacidad explicativa del modelo o utilizar otro tipo de algoritmo que tenga en cuenta relaciones mas complejas y no lineales entre las variables independientes y la variable dependiente.
+
+En este caso, el término del intercept se ha eliminado, y el precio predicho se calcula directamente sumando los efectos de todas las variables predictoras. Esta aproximación asume que el precio base de una habitación es 0 cuando todas las demás variables son 0.
+
 ```{r}
-model <- lm(room_price ~ neighbourhood + room_type + availibility+0, data = train_data)
+model <- lm(room_price ~ neighbourhood + room_type + availibility + minimum_nights + 0, data = train_data)
 
 summary(model)
 ```
@@ -173,7 +177,7 @@ print(paste("RMSE del modelo:", accuracy))
 ```{r}
 coefficients <- coef(model)
 
-predict_room_price <- function(neighbourhood, room_type, availibility, coefficients) {
+predict_room_price <- function(neighbourhood, room_type, availibility, minimum_nights, coefficients) {
   # Intercepto
   intercept <- coefficients["(Intercept)"]
   
@@ -183,6 +187,7 @@ predict_room_price <- function(neighbourhood, room_type, availibility, coefficie
   
   # Coeficiente de la variable continua
   availibility_coef <- coefficients["availibility"]
+  minimum_nights_coef <- coefficients["minimum_nights"]
   
   # Verificar si los coeficientes de las interacciones existen
   interaction_coef <- coefficients[paste0("neighbourhood", neighbourhood, ":room_type", room_type)]
@@ -191,72 +196,55 @@ predict_room_price <- function(neighbourhood, room_type, availibility, coefficie
   }
   
   # Calcular la predicción
-  predicted_price <- intercept + neighbourhood_coef + room_type_coef + availibility_coef * availibility + interaction_coef
+  predicted_price <- intercept + neighbourhood_coef + room_type_coef + availibility_coef * availibility + + minimum_nights_coef * minimum_nights + interaction_coef
   
   return(predicted_price)
 }
-
 ```
 
 ```{r}
-new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 120)
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 120,  minimum_nights = 1)
 
 # Usar la función predict() para predecir el precio
 predicted_price <- predict(model, new_data)
-print(predicted_price)
+paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 120 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 365,  minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Se puede comprobar con respecto al anterior que con un precio más alto hay una mayor disponibilidad, el apartamento con el precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Hotel room", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para una habitación de hotel en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es una habitación de hotel, el precio de la misma aumenta notablemente.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. En un barrio más alejado del centro el precio es menor.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 20)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo 20 noches es ",round(predicted_price,2), "€. Al aumentar el minimo numero de noches obligatorias que se debe reservar el precio debe bajar para que sea más interesante.")
+cat("\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Private room", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+paste("La predicción del precio para una habitación privada en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es compartido aunque la habitación sea privada, el precio de la misma disminuye notablemente.")
 
 ```
-
-1.  
-
-    # Leer el archivo CSV y especificar los tipos de datos de las columnas
-
-    ```{r}
-    install.packages("randomForest")
-    library(randomForest)
-    install.packages("dplyr")
-    install.packages("readr")
-    library(dplyr)
-    library(readr)
-    df <- read.csv("barrios_municipio_madrid.csv", sep = ";", colClasses = c("character", "character"))
-    ```
-
-    ```{r}
-    merged_df <- left_join(data, df, by = c("neighbourhood" = "barrio_nombre"))
-    head(merged_df)
-    merged_df <- na.omit(merged_df)
-    set.seed(123) # Este set.seed hace que a todos nos generen los mismos número aleatorios
-    idx <- sample(1:nrow(merged_df), 0.7*nrow(merged_df))
-    df_train <- merged_df[idx,]
-    df_test <- merged_df[-idx,]
-    ```
-
-    # Convertir las variables categóricas a factores
-
-    ```{r}
-    df_train$distrito_nombre <- as.factor(df_train$distrito_nombre)
-    df_train$room_type <- as.factor(df_train$room_type)
-
-    ```
-
-    # Ajustar el modelo de Random Forest
-
-    ```{r}
-    rf_model <- randomForest(room_price ~ distrito_nombre + room_type, data = df_train, ntree = 500)
-    ```
-
-    # Resumen del modelo
-
-    ```{r}
-    print(rf_model)
-    ```
-
-    # Importancia de las variables
-
-    ```{r}
-    importance(rf_model)
-    varImpPlot(rf_model)
-    ```
 
 ## Informe
 
