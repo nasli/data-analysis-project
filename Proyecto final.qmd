@@ -94,7 +94,7 @@ c.  (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado correct
 
 ## Análisis Exploratorio
 
-Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, “dobles espacios”, etc.)
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, "dobles espacios", etc.)
 
 ```{r}
 data %>% select_if(where(is.numeric)) %>% summary()
@@ -146,8 +146,26 @@ A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y 
 
 La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un inmueble en función de las características que elijáis
 
-```{r}
+En primer lugar dividimos los datos en train y test para para poder **evaluar el rendimiento del modelo**, ya que si usamos todos los datos del dataset, el modelo estaría entrenado para valores específicos de esos datos y que no se podrían generalizar a otros conjuntos de datos, suceso llamado **overfitting**.
 
+Al dividir el dataset, vemos el rendimiento en datos del propio conjunto que no han sido usados para su entrenamiento, por lo que nos da una visión más realista de cómo se comportará el modelo con datos nuevos.
+
+```{r}
+set.seed(123) 
+idx <- sample(1:nrow(data), 0.7*nrow(data))
+train_data <- data[idx,]
+test_data <- data[-idx,]
+```
+
+```{r}
+model <- lm(formula= room_price ~ room_type + neighbourhood, data = train_data)
+summary(model)
+```
+
+```{r}
+predictions <- predict(model, newdata = test_data)
+accuracy <- sqrt(mean((predictions - test_data$room_price)^2))
+print(paste("RMSE del modelo:", accuracy))
 ```
 
 ## Informe
