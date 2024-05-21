@@ -1,12 +1,19 @@
 ---
-title: "Proyecto Final - KeepCoding Mujeres en Tech II"
-subtitle: ""
-author: ""
+title: "Proyecto Final - Airbnb Data Analysis"
+subtitle: "Future Host Guide"
+author:
+  - name: "Noelia Álvarez"
+  - name: "Miriam Sánchez"
+  - name: "Elena Candela"
+  - name: "Carol Vílchez"
+  - name: "Sandra Rodríguez"
 table-of-contents: true
 format: pdf
 editor: visual
 output: pdf_document
 ---
+
+# Airbnb Data Analysis
 
 ## Data Set
 
@@ -246,6 +253,82 @@ paste("La predicción del precio para una habitación privada en Prosperidad con
 
 ```
 
-## Informe
+## **Informe**
 
-En esta etapa se debe de simular la presentación de resultados en un entorno real de empresa. ● Suposiciones iniciales ○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué? ● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué? KeepCoding© All rights reserved
+En esta etapa se debe de simular la presentación de resultados en un entorno real de empresa. ● Suposiciones iniciales ○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué? ● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué?
+
+------------------------------------------------------------------------
+
+Trás analizar los datos facilitados en el dataset, nos enfocamos a responder preguntas de un futuro anfitrion que quiere conocer la rentabilidad que tendría a la hora de ofertar un alojamiento teniendo en cuenta varias metricas como la zona, tipo de alojamiento, etc...
+
+Visualizamos en Tableau varias metricas que nos ayudan a poder aconsejar a futuros host.
+
+Para ello vemos primeramente la cantidad de Airbnb que hay en Madrid, 21.255 a fecha del dataset y vemos la cantidad de host que hay por barrios, siendo el barrio de Embajadores en el que más se concentran.
+
+Tambien podemos ver que los alojamientos preferidos son el apartamento entero, seguido de la habitación privada.
+
+![](images/primero.PNG)
+
+Otro punto importante es ver el promedio de precios por distrito y por barrio. Aqui vemos los barrios y distritos más caros y más baratos y cual es el promedio total de todo Madrid, que se encuentra en 144,52€ precio por noche.
+
+Siendo el precio medio más bajo el del barrio de Orcasur en Usera (31,96€) y el más alto el de Guindalera en el distrito de Salamanca (555,10€)
+
+![](images/segundo.PNG)
+
+Continuamos viendo cual ha sido la tendencia de crecimiento en los ultimos años desde sus inicios
+
+![](images/1-01.PNG)
+
+En este gráfico podemos ver la evolución desde los primeros Airbnb en Madrid en el año 2012. Existe un notable crecimiento a lo largo de los años y las zonas en las que más alojamientos hay por distrito, que se suele concentrar principalmente en el centro de la capital, debido a la amplia oferta turistica que existe.
+
+![](images/3.PNG)
+
+Como se puede ver, solo el distrito centro cuenta con 2.879 host y la media de precio son 158€/noche siendo, como ya hemos mencionado, el apartamento completo el tipo de alojamiento preferido por los usuarios.
+
+Una vez conocemos la tendencia, vamos a ver la media de ingresos por año en cada barrio
+
+![](images/2.PNG)
+
+Como podemos comprobar, en los barrios más centricos es donde mayor media de ganancia existe al año, tambien porque es donde más alojamientos hay, por lo que debemos tener en cuenta este dato, ya que si se eligen estos barrios, contaremos con mayor competencia.
+
+Por otro lado, nos aseguramos una mayor ocupación practicamente durante todo el año, ya que es la zona preferida por los turistas de todo el mundo. Como hemos comprobado, hay una notoria cantidad de alojamientos cuyos anuncios están en inglés y chino principalmente, aunque tambien hay anuncios en otros idiomas.
+
+En la gráfica de "ocupacion al año" podemos apreciar que los primeros alojamientos que se ofrecian era el apartamento entero y habitación privada, y la tendencia fue cambiando a partir de 2015 donde apareció la habitación compartida y la habitación de hotel. No obstante, siguen siendo la habitación privada y el apartamento entero las estancias que más se alquilan, teniendo un promedio de ocupación de casi 200 dias al año.
+
+La gráfica de "estimación de ganancias" nos muestra de un vistazo como se han incrementado las ganancias en los ultimos años.
+
+**Estos datos se pueden ver con mayor detalle en el archivo adjunto"Proyecto_final.twbx"**
+
+**NORMATIVA DE NO ALQUILAR POR MAS DE 90 NOCHES**
+
+Según los datos estudiados en el dataset hay un porcentaje (6,7%) de viviendas que no cumplirian con la normativa conocida como "regla de los 90 dias"
+
+El Plan Especial de Hospedaje (PEH), limita a 90 días la posibilidad de alquilar una vivienda con fines turísticos sin permiso y a partir de ese plazo obliga a obtener una licencia de uso terciario de hospedaje.
+
+<https://www.madrid.es/portales/munimadrid/es/Inicio/Vivienda-y-urbanismo/Urbanismo/Plan-Especial-de-regulacion-del-uso-de-servicios-terciarios-en-la-clase-de-hospedaje/?vgnextoid=b71cbc8d3c9f4610VgnVCM1000001d4a900aRCRD&vgnextchannel=2af331d3b28fe410VgnVCM1000000b205a0aRCRD>
+
+En el siguiente enlace podemos ver con más detalle la legislacion de la comunidad de Madrid sobre alquileres turisticos:
+
+<https://www.comunidad.madrid/servicios/consumo/normativa-alojamientos-turisticos>
+
+# Conclusiones
+
+-   Con un precio más alto hay una mayor disponibilidad, el apartamento con el precio más bajo se alquila más y por lo tanto tiene menos disponibilidad
+
+-   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma aumenta notablemente
+
+-   En un barrio más alejado del centro el precio es menor
+
+-   Al aumentar el mínimo número de noches obligatorias que se debe reservar el precio debe bajar para que sea más interesante.
+
+-   Si el tipo de alojamiento es compartido aunque la habitación sea privada, el precio de la misma disminuye notablemente
+
+## Lecciones aprendidas
+
+-   Limitación de la calidad de los datos de origen
+
+-   Importancia de la limpieza de datos como primer paso del análisis
+
+-   Análisis de outliers que impactan en el modelo distorsionando las predicciones del modelo.
+
+-   El modelo de regresión lineal no es el más apropiado debido a las complejas relaciones no lineales entre variables.
