@@ -261,7 +261,7 @@ Primeramente realizamos el diseño de las tablas que vamos a utilizar y las divi
 
 ------------------------------------------------------------------------
 
-![](images/draw.io-01.PNG)
+![](resources/draw.io.PNG)
 
 Trás analizar los datos facilitados en el dataset, nos enfocamos a responder preguntas de un futuro anfitrion que quiere conocer la rentabilidad que tendría a la hora de ofertar un alojamiento teniendo en cuenta varias metricas como la zona, tipo de alojamiento, etc...
 
@@ -271,23 +271,27 @@ Para ello vemos primeramente la cantidad de Airbnb que hay en Madrid, 21.255 a f
 
 Tambien podemos ver que los alojamientos preferidos son el apartamento entero, seguido de la habitación privada.
 
-![](images/analysis of price.PNG)
+![](resources/analysis of price.PNG)
 
 Otro punto importante es ver el promedio de precios por distrito y por barrio. Aqui vemos los barrios y distritos más caros y más baratos y cual es el promedio total de todo Madrid, que se encuentra en 144,52€ precio por noche.
 
 Siendo el precio medio más bajo el del barrio de Orcasur en Usera (31,96€) y el más alto el de Guindalera en el distrito de Salamanca (555,10€)
 
-![](images/district&neighbourhood.PNG)
+![](resources/district&neighbourhood.PNG)
 
-Continuamos viendo cual ha sido la tendencia de crecimiento en los ultimos años desde sus inicios![](images/Tendencia host.PNG)En este gráfico podemos ver la evolución desde los primeros Airbnb en Madrid en el año 2012. Existe un notable crecimiento a lo largo de los años y las zonas en las que más alojamientos hay por distrito, que se suele concentrar principalmente en el centro de la capital, debido a la amplia oferta turistica que existe.
+Continuamos viendo cual ha sido la tendencia de crecimiento en los ultimos años desde sus inicios
 
-![](images/distrito_centro.PNG)
+![](resources/Tendencia host.PNG)
+
+En este gráfico podemos ver la evolución desde los primeros Airbnb en Madrid en el año 2012. Existe un notable crecimiento a lo largo de los años y las zonas en las que más alojamientos hay por distrito, que se suele concentrar principalmente en el centro de la capital, debido a la amplia oferta turistica que existe.
+
+![](resources/distrito_centro.PNG)
 
 Como se puede ver, solo el distrito centro cuenta con 2.879 host y la media de precio son 158€/noche siendo, como ya hemos mencionado, el apartamento completo el tipo de alojamiento preferido por los usuarios.
 
 Una vez conocemos la tendencia, vamos a ver la media de ingresos por año en cada barrio
 
-![](images/earnings.PNG)
+![](resources/earnings.PNG)
 
 Como podemos comprobar, en los barrios más centricos es donde mayor media de ganancia existe al año, tambien porque es donde más alojamientos hay, por lo que debemos tener en cuenta este dato, ya que si se eligen estos barrios, contaremos con mayor competencia.
 
