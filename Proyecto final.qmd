@@ -271,7 +271,7 @@ Para ello vemos primeramente la cantidad de Airbnb que hay en Madrid, 21.255 a f
 
 Tambien podemos ver que los alojamientos preferidos son el apartamento entero, seguido de la habitación privada.
 
-![](resources/analysis of price.PNG)
+![](resources/analysis%20of%20price.PNG)
 
 Otro punto importante es ver el promedio de precios por distrito y por barrio. Aqui vemos los barrios y distritos más caros y más baratos y cual es el promedio total de todo Madrid, que se encuentra en 144,52€ precio por noche.
 
@@ -281,7 +281,7 @@ Siendo el precio medio más bajo el del barrio de Orcasur en Usera (31,96€) y 
 
 Continuamos viendo cual ha sido la tendencia de crecimiento en los ultimos años desde sus inicios
 
-![](resources/Tendencia host.PNG)
+![](resources/Tendencia%20host.PNG)
 
 En este gráfico podemos ver la evolución desde los primeros Airbnb en Madrid en el año 2012. Existe un notable crecimiento a lo largo de los años y las zonas en las que más alojamientos hay por distrito, que se suele concentrar principalmente en el centro de la capital, debido a la amplia oferta turistica que existe.
 
@@ -329,10 +329,56 @@ En el siguiente enlace podemos ver con más detalle la legislacion de la comunid
 
 ## Lecciones aprendidas
 
--   Limitación de la calidad de los datos de origen
+**Aspectos Positivos y Recomendaciones para Repetir**
 
--   Importancia de la limpieza de datos como primer paso del análisis
+-   Exploración de Datos Exhaustiva:
 
--   Análisis de outliers que impactan en el modelo distorsionando las predicciones del modelo.
+Lo que funcionó: Realizar un análisis exploratorio de datos (EDA) fue crucial para entender las variables y su impacto en el precio de alquiler. Visualizar distribuciones y relaciones entre variables ayudó a identificar patrones y posibles transformaciones necesarias.
 
--   El modelo de regresión lineal no es el más apropiado debido a las complejas relaciones no lineales entre variables.
+Repetir: Siempre realizar un EDA detallado al inicio de cualquier proyecto de análisis de datos para orientar mejor el enfoque del modelado.
+
+-   Preprocesamiento de Datos:
+
+Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos, la conversión de tipos de datos y la codificación de variables categóricas, fue esencial para asegurar que el modelo funcionara correctamente.
+
+Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar la calidad y consistencia de los datos antes de aplicar cualquier técnica de modelado.
+
+-   Evaluación del Modelo con Métricas Apropiadas:
+
+Lo que funcionó: Utilizar la RMSE (Raíz del Error Cuadrático Medio) como métrica para evaluar el desempeño del modelo proporcionó una medida clara de la precisión de las predicciones.
+
+Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión. En problemas de regresión, la RMSE, MAE y R² son métricas fundamentales.
+
+-   Documentación y Comunicación de Resultados:
+
+Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a alinear expectativas y a demostrar el valor del análisis.
+
+Repetir: Mantener una documentación detallada y comunicar los hallazgos de manera efectiva a todas las partes interesadas en el proyecto.
+
+**Áreas de mejora y nuevas estrategias**
+
+-   Manejo de Datos Faltantes:
+
+Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review pueden afectar el rendimiento del modelo si no se manejan adecuadamente.
+
+Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes, como la imputación múltiple o el uso de modelos predictivos para estimar valores faltantes.
+
+-   Validación del Modelo:
+
+Lo que aprendimos: Validar el modelo solo con una división de los datos en entrenamiento y prueba puede no ser suficiente.
+
+Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del modelo de manera más robusta y asegurar que el modelo generaliza bien a datos no vistos.
+
+-   Experimentación con Diferentes Modelos:
+
+Lo que aprendimos: Si bien el modelo lineal fue un buen punto de partida, explorar otros tipos de modelos podría haber mejorado la precisión de las predicciones.
+
+Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest, Gradient Boosting Machines o modelos de redes neuronales, y comparar sus desempeños con el modelo lineal.
+
+
+
+
+
+
+
+
