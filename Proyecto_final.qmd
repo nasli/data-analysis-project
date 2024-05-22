@@ -345,18 +345,18 @@ En el siguiente enlace podemos ver con más detalle la legislacion de la comunid
 
 # Conclusiones
 
--   Con un precio más alto hay una mayor disponibilidad, el apartamento con el \
+-   Con un precio más alto hay una mayor disponibilidad, el apartamento con el\
     precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.
 
--   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma \
+-   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma\
     aumenta notablemente.
 
 -   En un barrio más alejado del centro el precio es menor.
 
--   Al aumentar el mínimo número de noches obligatorias que se debe reservar el \
+-   Al aumentar el mínimo número de noches obligatorias que se debe reservar el\
     precio debe bajar para que sea más interesante.
 
--   Si el tipo de alojamiento es compartido aunque la habitación sea privada, \
+-   Si el tipo de alojamiento es compartido aunque la habitación sea privada,\
     el precio de la misma disminuye notablemente
 
 ## Lecciones aprendidas
@@ -374,11 +374,11 @@ datos para orientar mejor el enfoque del modelado.
 
 -   Preprocesamiento de Datos:
 
-Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos, \
-la conversión de tipos de datos y la codificación de variables categóricas, \
+Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos,\
+la conversión de tipos de datos y la codificación de variables categóricas,\
 fue esencial para asegurar que el modelo funcionara correctamente.
 
-Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar \
+Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar\
 la calidad y consistencia de los datos antes de aplicar cualquier técnica de modelado.
 
 -   Evaluación del Modelo con Métricas Apropiadas:
@@ -387,12 +387,12 @@ Lo que funcionó: Utilizar la RMSE (Raíz del Error Cuadrático Medio) como mét
 evaluar el desempeño del modelo proporcionó una medida clara de la precisión de las\
 predicciones.
 
-Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión. \
+Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión.\
 En problemas de regresión, la RMSE, MAE y R² son métricas fundamentales.
 
 -   Documentación y Comunicación de Resultados:
 
-Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a \
+Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a\
 alinear expectativas y a demostrar el valor del análisis.
 
 Repetir: Mantener una documentación detallada y comunicar los hallazgos de manera\
@@ -402,10 +402,10 @@ efectiva a todas las partes interesadas en el proyecto.
 
 -   Manejo de Datos Faltantes:
 
-Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review \
+Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review\
 pueden afectar el rendimiento del modelo si no se manejan adecuadamente.
 
-Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes, \
+Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes,\
 como la imputación múltiple o el uso de modelos predictivos para estimar valores faltantes.
 
 -   Validación del Modelo:
@@ -413,7 +413,7 @@ como la imputación múltiple o el uso de modelos predictivos para estimar valor
 Lo que aprendimos: Validar el modelo solo con una división de los datos en entrenamiento\
 y prueba puede no ser suficiente.
 
-Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del \
+Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del\
 modelo de manera más robusta y asegurar que el modelo generaliza bien a datos no vistos.
 
 -   Experimentación con Diferentes Modelos:
@@ -421,6 +421,6 @@ modelo de manera más robusta y asegurar que el modelo generaliza bien a datos n
 Lo que aprendimos: Si bien el modelo lineal fue un buen punto de partida, explorar otros\
 tipos de modelos podría haber mejorado la precisión de las predicciones.
 
-Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest, \
+Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest,\
 Gradient Boosting Machines o modelos de redes neuronales, y comparar sus desempeños\
 con el modelo lineal.
