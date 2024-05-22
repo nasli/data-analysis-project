@@ -1,0 +1,426 @@
+---
+title: "Proyecto Final - Airbnb Data Analysis"
+subtitle: "Future Host Guide"
+author:
+  - name: "Noelia Álvarez"
+  - name: "Miriam Sánchez"
+  - name: "Elena Candela"
+  - name: "Carol Vílchez"
+  - name: "Sandra Rodríguez"
+table-of-contents: true
+format: pdf
+editor: visual
+output: pdf_document
+---
+
+# Airbnb Data Analysis
+
+## Data Set
+
+```{r, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(magrittr)
+data = read_csv2('air-bnb-listings.csv')
+```
+
+## Arquitectura y validación de los datos
+
+a.  Muestreo y exploración inicial de los datos
+
+```{r, include=TRUE, echo=FALSE}
+paste("El dataset tiene:", dim(data)[1], "filas y " , dim(data)[2], "columnas.")
+paste("Las variables que tenemos son: ")
+paste(colnames(data))
+```
+
+Para mayor facilidad en el manejo de los datos reemplazamos los espacios en los nombres de las columnas por guiones bajos "\_" y se cambian los nombres por minúsculas.
+
+```{r}
+colnames(data) = colnames(data) %>%  str_replace_all(' ', '_') %>% tolower()
+```
+
+Hacemos un análisis inicial de los datos, en este encontramos:
+
+-   La variable room_price tiene como valor máximo 9999, este valor se puede considerar como outlier pero usualmente se usa para codificar valores no válidos, por lo que se tendrá en cuenta para eliminar y no ser considerado como valor máximo observado.
+
+-   La variable number_of_reviews_per_month es numérica pero se ha cargado como character, tenemos que transformarla a numérica.
+
+-   Aunque las columnas room_id y host_id se cargan como variables cuantitativas, por sus características debemos transformarlas en variables de tipo texto.
+
+-   La variable minimum_nights tiene un valor máximo de 1125, tendremos que analizarlo para saber si se considera un outlier o si se puede corresponder con un valor anómalo.
+
+-   La variable coordinates es una variable que contiene la latitud y longitud en una misma cadena de texto, vamos a separar separar la variable usando la "," como separador y lo vamos a transformar a variable numérica.
+
+-   Las variables date_last_review y number_of_reviews_per_month tienen NA's, en el caso de number_of_reviews_per_month al ser cuantitativa se puede considerar imputar con un 0, ya que la interpretación de la variable no se vería afectada.
+
+```{r}
+summary(data)
+```
+
+Aplicamos los cambios que hemos observado en el análisis inicial antes de realizar el análisis de las variables cuantitativas.
+
+```{r}
+data[,c("room_id", "host_id")] %<>%  toString()
+data$number_of_reviews_per_month %<>%  as.numeric()
+data$lat <- data$coordinates %>% str_split_i(', ', 1) %>% as.numeric()
+data$long <- data$coordinates %>% str_split_i(', ', 2) %>%  as.numeric()
+```
+
+Analizamos cuántos valores distintos tienen las variables cualitativas:
+
+```{r}
+data %>% select_if(where(is.character)) %>% map_dfc(n_distinct)
+```
+
+Las variables City y Country deberían tener un único valor, ya que solo nos centramos en una ciudad y en un país.
+
+```{r}
+print('Ciudades únicas:')
+data$city %>% unique()
+
+print('Países únicas:')
+data$country %>% unique()
+```
+
+```{r}
+data = data[data$city=="Madrid",]
+
+```
+
+```{r}
+data %>% select_if(where(is.character)) %>% map_dfc(n_distinct)
+```
+
+b.  Definir e implementar el Datawarehouse
+
+```{r}
+data[is.na(data$number_of_reviews_per_month), 'number_of_reviews_per_month'] = 0
+```
+
+c.  (Opcional) Ingesta de datos (ETL) y validación de que se ha cargado correctamente
+
+## Análisis Exploratorio
+
+Hacer un estudio estadístico con R o Python, según preferencia personal, y averiguar cuales son las métricas adecuadas para el dataset. No olvidemos: a. Revisión de la calidad de los datos b. Detección outliers (rango de variables), imputación valores nulos. c. Boxplots, histogramas, etc. d. Normalización de los valores de las tablas (quitar tildes, "dobles espacios", etc.)
+
+```{r}
+data %>% select_if(where(is.numeric)) %>% summary()
+```
+
+En las variables room_price y minimum_nights tiene un máximo muy lejano al tercer cuartil, vamos a analizar si estos valores se pueden considerar válidos o no.
+
+```{r}
+data %>% select ('room_type','room_price', 'minimum_nights') %>%
+  ggplot( aes(x=room_type, y=minimum_nights, fill=room_type)) +
+    geom_boxplot() +
+ #   scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+  #  theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("") +
+    xlab("")
+```
+
+```{r}
+data %>% select ('room_type','room_price', 'minimum_nights') %>%
+  ggplot( aes(x=room_type, y=room_price, fill=room_type)) +
+    geom_boxplot() +
+ #   scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+  #  theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("") +
+    xlab("")
+```
+
+```{r}
+data$room_type %>% table() %>% barplot()
+```
+
+## Visualización de las métricas
+
+A partir de los datos de Airbnb, obtén los KPIs que puedan ser de relevancia y contesta a través de un dashboard a una pregunta relevante que hagas sobre los datos. a. a. Se valorará el diseño final del dashboard. b. b. El uso de buenas prácticas. c. c. El cálculo de KPIs adecuados y el uso de campos calculados avanzados. d. d. El uso de vistas interactivas. Nota: En este ejercicio no habrá un dashboard modelo sino que se basará en valorar vuestras capacidades con el uso de la herramienta de Tableau y que podáis demostrar todo lo aprendido durante este bloque
+
+```{r}
+
+```
+
+## Pre-procesamiento y Modelado
+
+La tarea asignada es hacer un algoritmo de regresión lineal que prediga el precio de un inmueble en función de las características que elijáis
+
+En primer lugar dividimos los datos en train y test para para poder **evaluar el rendimiento del modelo**, ya que si usamos todos los datos del dataset, el modelo estaría entrenado para valores específicos de esos datos y que no se podrían generalizar a otros conjuntos de datos, suceso llamado **overfitting**.
+
+Al dividir el dataset, vemos el rendimiento en datos del propio conjunto que no han sido usados para su entrenamiento, por lo que nos da una visión más realista de cómo se comportará el modelo con datos nuevos.
+
+```{r}
+data <- data[data$room_price<9999,]
+set.seed(123) 
+idx <- sample(1:nrow(data), 0.7*nrow(data))
+train_data <- data[idx,]
+test_data <- data[-idx,]
+```
+
+El modelo de regresión lineal muestra cómo los precios de las habitaciones varían según el barrio, el tipo de habitación, la disponibilidad y el minimo de noches. Hay una gran parte de la variabilidad que no se explica por estas variables, lo que sugiere que se podría considerar agregar más variables independientes para mejorar la capacidad explicativa del modelo o utilizar otro tipo de algoritmo que tenga en cuenta relaciones mas complejas y no lineales entre las variables independientes y la variable dependiente.
+
+En este caso, el término del intercept se ha eliminado, y el precio predicho se calcula directamente sumando los efectos de todas las variables predictoras. Esta aproximación asume que el precio base de una habitación es 0 cuando todas las demás variables son 0.
+
+```{r}
+model <- lm(room_price ~ neighbourhood + room_type + availibility +
+minimum_nights + 0, data = train_data)
+
+summary(model)
+```
+
+```{r}
+predictions <- predict(model, newdata = test_data)
+accuracy <- sqrt(mean((predictions - test_data$room_price)^2))
+print(paste("RMSE del modelo:", accuracy))
+```
+
+```{r}
+coefficients <- coef(model)
+
+predict_room_price <- function(neighbourhood, room_type, availibility,
+minimum_nights, coefficients) {
+  # Intercepto
+  intercept <- coefficients["(Intercept)"]
+  
+  # Extraer los coeficientes de las variables categóricas
+  neighbourhood_coef <- coefficients[paste0("neighbourhood", neighbourhood)]
+  room_type_coef <- coefficients[paste0("room_type", room_type)]
+  
+  # Coeficiente de la variable continua
+  availibility_coef <- coefficients["availibility"]
+  minimum_nights_coef <- coefficients["minimum_nights"]
+  
+  # Verificar si los coeficientes de las interacciones existen
+  interaction_coef <- coefficients[paste0("neighbourhood", neighbourhood,
+  ":room_type", room_type)]
+  if (is.na(interaction_coef)) {
+    interaction_coef <- 0
+  }
+  
+  # Calcular la predicción
+  predicted_price <- intercept + neighbourhood_coef + room_type_coef +
+  availibility_coef * availibility + + minimum_nights_coef * minimum_nights +
+  interaction_coef
+  
+  return(predicted_price)
+}
+```
+
+```{r}
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt",
+availibility = 120,  minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para un apartamento entero en Sol con \n
+disponibilidad de 120 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€ \n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt",
+availibility = 365,  minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para un apartamento entero en Sol con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€. \n 
+Se puede comprobar con respecto al anterior que con un precio más alto \n
+hay una mayor disponibilidad, el apartamento con el precio más bajo se \n
+alquila más y por lo tanto tiene menos disponibilidad.\n")
+
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Hotel room", 
+availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para una habitación de hotel en Sol con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ", 
+round(predicted_price,2), "€. \n 
+Si el tipo de alojamiento es una habitación de hotel, el precio de la misma \n
+aumenta notablemente. \n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", 
+room_type = "Entire home/apt", availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para un apartamento entero en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ", 
+round(predicted_price,2), "€. \n
+En un barrio más alejado del centro el precio es menor.\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", 
+room_type = "Entire home/apt", availibility = 365, minimum_nights = 20)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para un apartamento entero en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo 20 noches es ", 
+round(predicted_price,2), "€. \n
+Al aumentar el minimo numero de noches obligatorias que se debe reservar el \n
+precio debe bajar para que sea más interesante. \n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Private room", 
+availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para una habitación privada en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€. \n
+Si el tipo de alojamiento es compartido aunque la habitación sea privada, el \n
+precio de la misma disminuye notablemente. \n")
+
+```
+
+## **Informe**
+
+En esta etapa se debe de simular la presentación de resultados en un entorno real de empresa. ● Suposiciones iniciales ○ Cuales han demostrado ser válidas y cuáles no. ¿Por qué? ● Métricas seleccionadas: ¿han sido las correctas o no? ¿por qué?
+
+Primeramente realizamos el diseño de las tablas que vamos a utilizar y las dividimos de la siguiente manera:
+
+------------------------------------------------------------------------
+
+![](resources/draw.io.PNG)
+
+Trás analizar los datos facilitados en el dataset, nos enfocamos a responder preguntas de un futuro anfitrion que quiere conocer la rentabilidad que tendría a la hora de ofertar un alojamiento teniendo en cuenta varias metricas como la zona, tipo de alojamiento, etc...
+
+Visualizamos en Tableau varias metricas que nos ayudan a poder aconsejar a futuros host.
+
+Para ello vemos primeramente la cantidad de Airbnb que hay en Madrid, 21.255 a fecha del dataset y vemos la cantidad de host que hay por barrios, siendo el barrio de Embajadores en el que más se concentran.
+
+Tambien podemos ver que los alojamientos preferidos son el apartamento entero, seguido de la habitación privada.
+
+![](resources/analysis%20of%20price.PNG)
+
+Otro punto importante es ver el promedio de precios por distrito y por barrio. Aqui vemos los barrios y distritos más caros y más baratos y cual es el promedio total de todo Madrid, que se encuentra en 144,52€ precio por noche.
+
+Siendo el precio medio más bajo el del barrio de Orcasur en Usera (31,96€) y el más alto el de Guindalera en el distrito de Salamanca (555,10€)
+
+![](resources/district&neighbourhood.PNG)
+
+Continuamos viendo cual ha sido la tendencia de crecimiento en los ultimos años desde sus inicios
+
+![](resources/Tendencia%20host.PNG)
+
+En este gráfico podemos ver la evolución desde los primeros Airbnb en Madrid en el año 2012. Existe un notable crecimiento a lo largo de los años y las zonas en las que más alojamientos hay por distrito, que se suele concentrar principalmente en el centro de la capital, debido a la amplia oferta turistica que existe.
+
+![](resources/distrito_centro.PNG)
+
+Como se puede ver, solo el distrito centro cuenta con 2.879 host y la media de precio son 158€/noche siendo, como ya hemos mencionado, el apartamento completo el tipo de alojamiento preferido por los usuarios.
+
+Una vez conocemos la tendencia, vamos a ver la media de ingresos por año en cada barrio
+
+![](resources/earnings.PNG)
+
+Como podemos comprobar, en los barrios más centricos es donde mayor media de ganancia existe al año, tambien porque es donde más alojamientos hay, por lo que debemos tener en cuenta este dato, ya que si se eligen estos barrios, contaremos con mayor competencia.
+
+Por otro lado, nos aseguramos una mayor ocupación practicamente durante todo el año, ya que es la zona preferida por los turistas de todo el mundo. Como hemos comprobado, hay una notoria cantidad de alojamientos cuyos anuncios están en inglés y chino principalmente, aunque tambien hay anuncios en otros idiomas.
+
+En la gráfica de "ocupacion al año" podemos apreciar que los primeros alojamientos que se ofrecian era el apartamento entero y habitación privada, y la tendencia fue cambiando a partir de 2015 donde apareció la habitación compartida y la habitación de hotel. No obstante, siguen siendo la habitación privada y el apartamento entero las estancias que más se alquilan, teniendo un promedio de ocupación de casi 200 dias al año.
+
+La gráfica de "estimación de ganancias" nos muestra de un vistazo como se han incrementado las ganancias en los ultimos años.
+
+**Estos datos se pueden ver con mayor detalle en el archivo adjunto"Proyecto_final.twbx"**
+
+**NORMATIVA DE NO ALQUILAR POR MAS DE 90 NOCHES**
+
+Según los datos estudiados en el dataset hay un porcentaje (6,7%) de viviendas que no cumplirian con la normativa conocida como "regla de los 90 dias"
+
+El Plan Especial de Hospedaje (PEH), limita a 90 días la posibilidad de alquilar una vivienda con fines turísticos sin permiso y a partir de ese plazo obliga a obtener una licencia de uso terciario de hospedaje.
+
+##### <https://www.madrid.es/portales/munimadrid/es/Inicio/Vivienda-y-urbanismo/Urbanismo/Plan-Especial-de-regulacion-del-uso-de-servicios-terciarios-en-la-clase-de-hospedaje/?vgnextoid=b71cbc8d3c9f4610VgnVCM1000001d4a900aRCRD&vgnextchannel=2af331d3b28fe410VgnVCM1000000b205a0aRCRD>
+
+En el siguiente enlace podemos ver con más detalle la legislacion de la comunidad de Madrid sobre alquileres turisticos:
+
+##### <https://www.comunidad.madrid/servicios/consumo/normativa-alojamientos-turisticos>
+
+# Conclusiones
+
+-   Con un precio más alto hay una mayor disponibilidad, el apartamento con el \
+    precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.
+
+-   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma \
+    aumenta notablemente.
+
+-   En un barrio más alejado del centro el precio es menor.
+
+-   Al aumentar el mínimo número de noches obligatorias que se debe reservar el \
+    precio debe bajar para que sea más interesante.
+
+-   Si el tipo de alojamiento es compartido aunque la habitación sea privada, \
+    el precio de la misma disminuye notablemente
+
+## Lecciones aprendidas
+
+**Aspectos Positivos y Recomendaciones para Repetir**
+
+-   Exploración de Datos Exhaustiva:
+
+Lo que funcionó: Realizar un análisis exploratorio de datos (EDA) fue crucial para entender\
+las variables y su impacto en el precio de alquiler. Visualizar distribuciones y relaciones\
+entre variables ayudó a identificar patrones y posibles transformaciones necesarias.
+
+Repetir: Siempre realizar un EDA detallado al inicio de cualquier proyecto de análisis de\
+datos para orientar mejor el enfoque del modelado.
+
+-   Preprocesamiento de Datos:
+
+Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos, \
+la conversión de tipos de datos y la codificación de variables categóricas, \
+fue esencial para asegurar que el modelo funcionara correctamente.
+
+Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar \
+la calidad y consistencia de los datos antes de aplicar cualquier técnica de modelado.
+
+-   Evaluación del Modelo con Métricas Apropiadas:
+
+Lo que funcionó: Utilizar la RMSE (Raíz del Error Cuadrático Medio) como métrica para\
+evaluar el desempeño del modelo proporcionó una medida clara de la precisión de las\
+predicciones.
+
+Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión. \
+En problemas de regresión, la RMSE, MAE y R² son métricas fundamentales.
+
+-   Documentación y Comunicación de Resultados:
+
+Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a \
+alinear expectativas y a demostrar el valor del análisis.
+
+Repetir: Mantener una documentación detallada y comunicar los hallazgos de manera\
+efectiva a todas las partes interesadas en el proyecto.
+
+**Áreas de mejora y nuevas estrategias**
+
+-   Manejo de Datos Faltantes:
+
+Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review \
+pueden afectar el rendimiento del modelo si no se manejan adecuadamente.
+
+Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes, \
+como la imputación múltiple o el uso de modelos predictivos para estimar valores faltantes.
+
+-   Validación del Modelo:
+
+Lo que aprendimos: Validar el modelo solo con una división de los datos en entrenamiento\
+y prueba puede no ser suficiente.
+
+Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del \
+modelo de manera más robusta y asegurar que el modelo generaliza bien a datos no vistos.
+
+-   Experimentación con Diferentes Modelos:
+
+Lo que aprendimos: Si bien el modelo lineal fue un buen punto de partida, explorar otros\
+tipos de modelos podría haber mejorado la precisión de las predicciones.
+
+Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest, \
+Gradient Boosting Machines o modelos de redes neuronales, y comparar sus desempeños\
+con el modelo lineal.
