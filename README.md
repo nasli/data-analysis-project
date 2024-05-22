@@ -9,12 +9,12 @@ An exploratory analysis of the data is performed with a statistical study with R
 
 Tableau has been used to visualise the metrics, which allows us to make the most of the information and present it in a visually clear way.
 
-In Tableau, different calculations and interactive visualisations are made to evaluate the KPIs.
+In Tableau, different calculations and interactive visualisations are made to evaluate the KPIs in the file exploration.twbx
 
 A linear regression algorithm is carried out and its suitability for the model is assessed.
 
-The Report.pdf file contains the report with the conclusions obtained.
+The report.pdf file contains the report with the conclusions obtained.
 
 Other tools used for the development of the project have been tools such as git for version control, taiga.io for the SCRUM board and discord as a group videoconferencing system for all the different sessions.
 
-A presentation of the project is included in the file Presentation_final_project.pdf.
+A presentation of the project is included in the file presentation.pdf.
