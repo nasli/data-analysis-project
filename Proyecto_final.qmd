@@ -170,7 +170,8 @@ El modelo de regresión lineal muestra cómo los precios de las habitaciones var
 En este caso, el término del intercept se ha eliminado, y el precio predicho se calcula directamente sumando los efectos de todas las variables predictoras. Esta aproximación asume que el precio base de una habitación es 0 cuando todas las demás variables son 0.
 
 ```{r}
-model <- lm(room_price ~ neighbourhood + room_type + availibility + minimum_nights + 0, data = train_data)
+model <- lm(room_price ~ neighbourhood + room_type + availibility +
+minimum_nights + 0, data = train_data)
 
 summary(model)
 ```
@@ -184,7 +185,8 @@ print(paste("RMSE del modelo:", accuracy))
 ```{r}
 coefficients <- coef(model)
 
-predict_room_price <- function(neighbourhood, room_type, availibility, minimum_nights, coefficients) {
+predict_room_price <- function(neighbourhood, room_type, availibility,
+minimum_nights, coefficients) {
   # Intercepto
   intercept <- coefficients["(Intercept)"]
   
@@ -197,59 +199,85 @@ predict_room_price <- function(neighbourhood, room_type, availibility, minimum_n
   minimum_nights_coef <- coefficients["minimum_nights"]
   
   # Verificar si los coeficientes de las interacciones existen
-  interaction_coef <- coefficients[paste0("neighbourhood", neighbourhood, ":room_type", room_type)]
+  interaction_coef <- coefficients[paste0("neighbourhood", neighbourhood,
+  ":room_type", room_type)]
   if (is.na(interaction_coef)) {
     interaction_coef <- 0
   }
   
   # Calcular la predicción
-  predicted_price <- intercept + neighbourhood_coef + room_type_coef + availibility_coef * availibility + + minimum_nights_coef * minimum_nights + interaction_coef
+  predicted_price <- intercept + neighbourhood_coef + room_type_coef +
+  availibility_coef * availibility + + minimum_nights_coef * minimum_nights +
+  interaction_coef
   
   return(predicted_price)
 }
 ```
 
 ```{r}
-new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 120,  minimum_nights = 1)
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt",
+availibility = 120,  minimum_nights = 1)
 
 # Usar la función predict() para predecir el precio
 predicted_price <- predict(model, new_data)
-paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 120 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€")
-cat("\n")
+cat("La predicción del precio para un apartamento entero en Sol con \n
+disponibilidad de 120 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€ \n")
 
-new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt", availibility = 365,  minimum_nights = 1)
-
-# Usar la función predict() para predecir el precio
-predicted_price <- predict(model, new_data)
-paste("La predicción del precio para un apartamento entero en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Se puede comprobar con respecto al anterior que con un precio más alto hay una mayor disponibilidad, el apartamento con el precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.")
-cat("\n")
-
-new_data <- data.frame(neighbourhood = "Sol", room_type = "Hotel room", availibility = 365, minimum_nights = 1)
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Entire home/apt",
+availibility = 365,  minimum_nights = 1)
 
 # Usar la función predict() para predecir el precio
 predicted_price <- predict(model, new_data)
-paste("La predicción del precio para una habitación de hotel en Sol con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es una habitación de hotel, el precio de la misma aumenta notablemente.")
-cat("\n")
+cat("La predicción del precio para un apartamento entero en Sol con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€. \n 
+Se puede comprobar con respecto al anterior que con un precio más alto \n
+hay una mayor disponibilidad, el apartamento con el precio más bajo se \n
+alquila más y por lo tanto tiene menos disponibilidad.\n")
 
-new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 1)
-
-# Usar la función predict() para predecir el precio
-predicted_price <- predict(model, new_data)
-paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. En un barrio más alejado del centro el precio es menor.")
-cat("\n")
-
-new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Entire home/apt", availibility = 365, minimum_nights = 20)
+new_data <- data.frame(neighbourhood = "Sol", room_type = "Hotel room", 
+availibility = 365, minimum_nights = 1)
 
 # Usar la función predict() para predecir el precio
 predicted_price <- predict(model, new_data)
-paste("La predicción del precio para un apartamento entero en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo 20 noches es ",round(predicted_price,2), "€. Al aumentar el minimo numero de noches obligatorias que se debe reservar el precio debe bajar para que sea más interesante.")
-cat("\n")
+cat("La predicción del precio para una habitación de hotel en Sol con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ", 
+round(predicted_price,2), "€. \n 
+Si el tipo de alojamiento es una habitación de hotel, el precio de la misma \n
+aumenta notablemente. \n")
 
-new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Private room", availibility = 365, minimum_nights = 1)
+new_data <- data.frame(neighbourhood = "Prosperidad", 
+room_type = "Entire home/apt", availibility = 365, minimum_nights = 1)
 
 # Usar la función predict() para predecir el precio
 predicted_price <- predict(model, new_data)
-paste("La predicción del precio para una habitación privada en Prosperidad con disponibilidad de 365 dias y que se reserve como minimo una noche es ",round(predicted_price,2), "€. Si el tipo de alojamiento es compartido aunque la habitación sea privada, el precio de la misma disminuye notablemente.")
+cat("La predicción del precio para un apartamento entero en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ", 
+round(predicted_price,2), "€. \n
+En un barrio más alejado del centro el precio es menor.\n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", 
+room_type = "Entire home/apt", availibility = 365, minimum_nights = 20)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para un apartamento entero en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo 20 noches es ", 
+round(predicted_price,2), "€. \n
+Al aumentar el minimo numero de noches obligatorias que se debe reservar el \n
+precio debe bajar para que sea más interesante. \n")
+
+new_data <- data.frame(neighbourhood = "Prosperidad", room_type = "Private room", 
+availibility = 365, minimum_nights = 1)
+
+# Usar la función predict() para predecir el precio
+predicted_price <- predict(model, new_data)
+cat("La predicción del precio para una habitación privada en Prosperidad con \n
+disponibilidad de 365 dias y que se reserve como minimo una noche es ",
+round(predicted_price,2), "€. \n
+Si el tipo de alojamiento es compartido aunque la habitación sea privada, el \n
+precio de la misma disminuye notablemente. \n")
 
 ```
 
@@ -309,23 +337,27 @@ Según los datos estudiados en el dataset hay un porcentaje (6,7%) de viviendas 
 
 El Plan Especial de Hospedaje (PEH), limita a 90 días la posibilidad de alquilar una vivienda con fines turísticos sin permiso y a partir de ese plazo obliga a obtener una licencia de uso terciario de hospedaje.
 
-<https://www.madrid.es/portales/munimadrid/es/Inicio/Vivienda-y-urbanismo/Urbanismo/Plan-Especial-de-regulacion-del-uso-de-servicios-terciarios-en-la-clase-de-hospedaje/?vgnextoid=b71cbc8d3c9f4610VgnVCM1000001d4a900aRCRD&vgnextchannel=2af331d3b28fe410VgnVCM1000000b205a0aRCRD>
+##### <https://www.madrid.es/portales/munimadrid/es/Inicio/Vivienda-y-urbanismo/Urbanismo/Plan-Especial-de-regulacion-del-uso-de-servicios-terciarios-en-la-clase-de-hospedaje/?vgnextoid=b71cbc8d3c9f4610VgnVCM1000001d4a900aRCRD&vgnextchannel=2af331d3b28fe410VgnVCM1000000b205a0aRCRD>
 
 En el siguiente enlace podemos ver con más detalle la legislacion de la comunidad de Madrid sobre alquileres turisticos:
 
-<https://www.comunidad.madrid/servicios/consumo/normativa-alojamientos-turisticos>
+##### <https://www.comunidad.madrid/servicios/consumo/normativa-alojamientos-turisticos>
 
 # Conclusiones
 
--   Con un precio más alto hay una mayor disponibilidad, el apartamento con el precio más bajo se alquila más y por lo tanto tiene menos disponibilidad
+-   Con un precio más alto hay una mayor disponibilidad, el apartamento con el\
+    precio más bajo se alquila más y por lo tanto tiene menos disponibilidad.
 
--   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma aumenta notablemente
+-   Si el tipo de alojamiento es una habitación de hotel, el precio de la misma\
+    aumenta notablemente.
 
--   En un barrio más alejado del centro el precio es menor
+-   En un barrio más alejado del centro el precio es menor.
 
--   Al aumentar el mínimo número de noches obligatorias que se debe reservar el precio debe bajar para que sea más interesante.
+-   Al aumentar el mínimo número de noches obligatorias que se debe reservar el\
+    precio debe bajar para que sea más interesante.
 
--   Si el tipo de alojamiento es compartido aunque la habitación sea privada, el precio de la misma disminuye notablemente
+-   Si el tipo de alojamiento es compartido aunque la habitación sea privada,\
+    el precio de la misma disminuye notablemente
 
 ## Lecciones aprendidas
 
@@ -333,52 +365,62 @@ En el siguiente enlace podemos ver con más detalle la legislacion de la comunid
 
 -   Exploración de Datos Exhaustiva:
 
-Lo que funcionó: Realizar un análisis exploratorio de datos (EDA) fue crucial para entender las variables y su impacto en el precio de alquiler. Visualizar distribuciones y relaciones entre variables ayudó a identificar patrones y posibles transformaciones necesarias.
+Lo que funcionó: Realizar un análisis exploratorio de datos (EDA) fue crucial para entender\
+las variables y su impacto en el precio de alquiler. Visualizar distribuciones y relaciones\
+entre variables ayudó a identificar patrones y posibles transformaciones necesarias.
 
-Repetir: Siempre realizar un EDA detallado al inicio de cualquier proyecto de análisis de datos para orientar mejor el enfoque del modelado.
+Repetir: Siempre realizar un EDA detallado al inicio de cualquier proyecto de análisis de\
+datos para orientar mejor el enfoque del modelado.
 
 -   Preprocesamiento de Datos:
 
-Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos, la conversión de tipos de datos y la codificación de variables categóricas, fue esencial para asegurar que el modelo funcionara correctamente.
+Lo que funcionó: Limpiar y preparar los datos, incluyendo el manejo de valores nulos,\
+la conversión de tipos de datos y la codificación de variables categóricas,\
+fue esencial para asegurar que el modelo funcionara correctamente.
 
-Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar la calidad y consistencia de los datos antes de aplicar cualquier técnica de modelado.
+Repetir: Implementar un proceso robusto de preprocesamiento de datos para garantizar\
+la calidad y consistencia de los datos antes de aplicar cualquier técnica de modelado.
 
 -   Evaluación del Modelo con Métricas Apropiadas:
 
-Lo que funcionó: Utilizar la RMSE (Raíz del Error Cuadrático Medio) como métrica para evaluar el desempeño del modelo proporcionó una medida clara de la precisión de las predicciones.
+Lo que funcionó: Utilizar la RMSE (Raíz del Error Cuadrático Medio) como métrica para\
+evaluar el desempeño del modelo proporcionó una medida clara de la precisión de las\
+predicciones.
 
-Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión. En problemas de regresión, la RMSE, MAE y R² son métricas fundamentales.
+Repetir: Elegir y usar las métricas de evaluación correctas para el problema en cuestión.\
+En problemas de regresión, la RMSE, MAE y R² son métricas fundamentales.
 
 -   Documentación y Comunicación de Resultados:
 
-Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a alinear expectativas y a demostrar el valor del análisis.
+Lo que funcionó: Documentar cada paso del proceso y comunicar en el equipo ayudó a\
+alinear expectativas y a demostrar el valor del análisis.
 
-Repetir: Mantener una documentación detallada y comunicar los hallazgos de manera efectiva a todas las partes interesadas en el proyecto.
+Repetir: Mantener una documentación detallada y comunicar los hallazgos de manera\
+efectiva a todas las partes interesadas en el proyecto.
 
 **Áreas de mejora y nuevas estrategias**
 
 -   Manejo de Datos Faltantes:
 
-Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review pueden afectar el rendimiento del modelo si no se manejan adecuadamente.
+Lo que aprendimos: Algunos datos faltantes en columnas clave como date_last_review\
+pueden afectar el rendimiento del modelo si no se manejan adecuadamente.
 
-Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes, como la imputación múltiple o el uso de modelos predictivos para estimar valores faltantes.
+Mejorar: Implementar técnicas avanzadas de imputación para manejar datos faltantes,\
+como la imputación múltiple o el uso de modelos predictivos para estimar valores faltantes.
 
 -   Validación del Modelo:
 
-Lo que aprendimos: Validar el modelo solo con una división de los datos en entrenamiento y prueba puede no ser suficiente.
+Lo que aprendimos: Validar el modelo solo con una división de los datos en entrenamiento\
+y prueba puede no ser suficiente.
 
-Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del modelo de manera más robusta y asegurar que el modelo generaliza bien a datos no vistos.
+Mejorar: Utilizar validación cruzada (cross-validation) para evaluar el rendimiento del\
+modelo de manera más robusta y asegurar que el modelo generaliza bien a datos no vistos.
 
 -   Experimentación con Diferentes Modelos:
 
-Lo que aprendimos: Si bien el modelo lineal fue un buen punto de partida, explorar otros tipos de modelos podría haber mejorado la precisión de las predicciones.
+Lo que aprendimos: Si bien el modelo lineal fue un buen punto de partida, explorar otros\
+tipos de modelos podría haber mejorado la precisión de las predicciones.
 
-Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest, Gradient Boosting Machines o modelos de redes neuronales, y comparar sus desempeños con el modelo lineal.
-
-
-
-
-
-
-
-
+Mejorar: Probar con diferentes algoritmos de machine learning, como Random Forest,\
+Gradient Boosting Machines o modelos de redes neuronales, y comparar sus desempeños\
+con el modelo lineal.
